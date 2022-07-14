@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int micros(millis) return millis * 1000;
+int micros(int millis)
+{
+	return millis * 1000;
+}
 
 int main()
 {
@@ -19,7 +22,7 @@ int main()
 	while (fgets(lyrics, 1000, stream) != NULL)
 	{
 		printf("%s", lyrics);
-		usleep(micros(1000));
+		usleep(micros(50));
 	}
 
 	fclose(stream);
