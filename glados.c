@@ -1,25 +1,28 @@
 #include <stdio.h>
+#include <unistd.h>
 
+int micros(millis) return millis * 1000;
 
 int main()
 {
-	FILE *fp;
+	FILE *stream;
 	char lyrics[1000];
 	
-	fp = fopen("lyrics.txt", "r");
+	stream = fopen("lyrics.txt", "r");
 
-	if (!fp)
+	if (!stream)
 	{
 		printf("error opening file\n");
 		return 1;
 	}
 
-	while (fgets(lyrics, 1000, fp) != NULL)
+	while (fgets(lyrics, 1000, stream) != NULL)
 	{
 		printf("%s", lyrics);
+		usleep(micros(1000));
 	}
 
-	fclose(fp);
+	fclose(stream);
 
 	return 0;
 }
