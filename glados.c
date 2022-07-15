@@ -1,16 +1,28 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int micros(int millis)
+int delay(int ms) {
+	usleep(ms * 1000);
+}
+
+int play_song(FILE *stream)
 {
-	return millis * 1000;
+	char lyrics[1000];
+	int bpm = 120;
+	int num_beats = 4;
+	int num_notes = 4;
+	int duration = 186000; // 3 minutes to milliseconds
+
+	while (fgets(lyrics, 1000, stream) != NULL)
+	{
+		printf("%s", lyrics);
+		delay(50);
+	}
 }
 
 int main()
 {
-	FILE *stream;
-	char lyrics[1000];
-	
+	FILE *stream = NULL;
 	stream = fopen("lyrics.txt", "r");
 
 	if (!stream)
@@ -19,11 +31,7 @@ int main()
 		return 1;
 	}
 
-	while (fgets(lyrics, 1000, stream) != NULL)
-	{
-		printf("%s", lyrics);
-		usleep(micros(50));
-	}
+	play_song(stream);
 
 	fclose(stream);
 
