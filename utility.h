@@ -1,4 +1,9 @@
 #define BUFFER_SIZE 4096
+#define ASCII_ESC 27
+
+void delay(int ms) { usleep(ms * 1000); }
+
+void print_escape_code(char *code) { printf("%c%s", ASCII_ESC, code); }
 
 char **get_lines(int *n, FILE *stream)
 {
