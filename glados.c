@@ -3,13 +3,15 @@
 #include <string.h>
 #include <stdlib.h>
 #include "utility.h"
+#include "tc.h"
 
-void print_animated_line(int length, char *line, int ms)
+void print_line_animated(int length, char *line, int ms)
 {
+		// Print lines gradually with delay to create an animated line
 		for (int i = 0; i < length; i++)
 		{
 			delay(ms);
-			printf("\33[2K\r");
+			printf("\r");
 			for (int j = 0; j <= i; j++)
 				printf("%c", line[j]);
 			fflush(stdout);
@@ -26,7 +28,7 @@ void play_song(FILE *stream)
 	for (int i = 0; i < 10; i++)
 	{
 		letters = strlen(lines[i]);
-		print_animated_line(letters, lines[i], 50);
+		print_line_animated(letters, lines[i], 50);
 		printf("\n");
 		delay(50);
 	}
