@@ -34,8 +34,9 @@ void print_line_animated(int start, int end, char *line, int ms)
 		{
 			delay(ms);
 			printf("\r");
-		// Print beginning unanimated
+			// Print beginning unanimated
 			printf("%*.*s", start, start, line);
+			// Print the rest animated
 			for (int j = start; j <= i; j++)
 				printf("%c", line[j]);
 			fflush(stdout);
