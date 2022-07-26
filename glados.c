@@ -10,42 +10,16 @@ void play_song(FILE *stream, int bpm)
 	int n = 0;
 	int letters = 0;
 	char **lines = get_lines(&n, stream);
-	char *beats = "8";
 
 	// Print each line
 	for (int i = 0; i < n; i++)
 	{
 		char *line = lines[i];
-		char *str_piece;
-		int start = 0;
-		int end = 0;
 
-		str_piece = strtok(line, ";");
-
-		if (i % 2 == 0)
-		{
-			// Even: Read beats
-			while (str_piece != NULL)
-			{
-				str_piece = strtok(NULL, ";");
-			}
-		}
-		else
-		{
-			// Odd: Print line
-			end += strlen(str_piece);
-			while (str_piece != NULL)
-			{
-				print_line_animated(start, end, line, 50);
-				start += strlen(str_piece);
-				str_piece = strtok(NULL, ";");
-				end += strlen(str_piece);
-			}
-		}
-
+		letters = strlen(line);
+		print_line_animated(letters, line);
 		printf("\n");
 	}
-	//print_line_animated(6, 17, lines[1], 50);
 
 	// Free lines
 	for (int i = 0; i < n; i++)

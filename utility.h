@@ -1,4 +1,7 @@
+#include <stdbool.h>
+
 #define BUFFER_SIZE 4096
+#define BEATS_BUFFER_SIZE 4
 
 void delay(int ms) { usleep(ms * 1000); }
 
@@ -27,18 +30,69 @@ char **get_lines(int *n, FILE *stream)
 	return lines;
 }
 
-void print_line_animated(int start, int end, char *line, int ms)
+char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 {
-		// Print lines gradually with delay to animate line
-		for (int i = start; i < end; i++)
+	if (dest == NULL) return NULL;
+	if (start > end) return NULL;
+	if (end - start > size) return NULL;
+
+	char *ptr = dest;
+
+	// Copy portion of string with pointer arithmetic
+	// Inspired by Portfolio Courses: https://portfoliocourses.com/
+	while (*src != '\0')
+	{
+		// Count down start and end vars to define portion of the string
+		if (start == 0)
 		{
+			*dest = *src;
+			dest++;
+		}
+		else start--;
+
+		if (end == 0) break;
+		else end--;
+
+		src++;
+	}
+	*dest = '\0';
+	
+	return ptr;
+}
+
+void print_line_animated(int length, char *line)
+{
+	bool print = false;	
+	char beats[BEATS_BUFFER_SIZE];
+	char src[] = "Heyo :D:D:D:D";
+	int start = 0;
+	int end = 0;
+
+	str_copy_index(beats, src, 2, 6, BEATS_BUFFER_SIZE);
+	printf("%s", beats);
+
+	// Print lines gradually with delay to animate line
+	/*
+	for (int i = 0; i < length; i++)
+	{
+		if (line[i] == '\\')
+		{
+			print = !print;
+			if (start < end) start = i;
+			else end = i;
+		}
+		else if (print)
+		{
+			
+			printf("%d\n", beats);
 			delay(ms);
 			printf("\r");
-			// Print beginning unanimated
-			printf("%*.*s", start, start, line);
-			// Print the rest animated
-			for (int j = start; j <= i; j++)
+			for (int j = 0; j <= i; j++)
+			{
 				printf("%c", line[j]);
+			}
 			fflush(stdout);
 		}
+	}
+	*/
 }
