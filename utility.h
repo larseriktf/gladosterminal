@@ -62,29 +62,30 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 
 void print_line_animated(int length, char *line)
 {
-	bool print = false;	
-	char beats[BEATS_BUFFER_SIZE];
-	char src[] = "Heyo :D:D:D:D";
+	bool read = false;	
+	char beats[BEATS_BUFFER_SIZE] = {'\0'};
 	int start = 0;
 	int end = 0;
 
-	str_copy_index(beats, src, 2, 6, BEATS_BUFFER_SIZE);
-	printf("%s", beats);
-
 	// Print lines gradually with delay to animate line
-	/*
 	for (int i = 0; i < length; i++)
 	{
 		if (line[i] == '\\')
 		{
-			print = !print;
-			if (start < end) start = i;
-			else end = i;
+			read = !read;
+			if (start <= end) start = i + 1;
+			else end = i - 1;
+			if (read) beats[0] = '\0';
 		}
-		else if (print)
+		else if (read == false)
 		{
-			
-			printf("%d\n", beats);
+			if (beats[0] == '\0')
+			{
+				str_copy_index(beats, line, start, end, BEATS_BUFFER_SIZE);
+				printf("Beats = %s\n", beats);
+			}
+			/*
+			printf("Heyo\n");
 			delay(ms);
 			printf("\r");
 			for (int j = 0; j <= i; j++)
@@ -92,7 +93,7 @@ void print_line_animated(int length, char *line)
 				printf("%c", line[j]);
 			}
 			fflush(stdout);
+			*/
 		}
 	}
-	*/
 }
