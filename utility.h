@@ -42,7 +42,7 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 	// Inspired by Portfolio Courses: https://portfoliocourses.com/
 	while (*src != '\0')
 	{
-		// Count down start and end vars to define portion of the string
+		// Count down start and end to define portion of the string
 		if (start == 0)
 		{
 			*dest = *src;
@@ -60,12 +60,32 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 	return ptr;
 }
 
+void str_replace_index(char *str, const char character, int start, int end)
+{
+	if (str == NULL) return;
+	if (start > end) return;
+
+	while (*str != '\0')
+	{
+		// Count down start and end to define portion of the string
+		if (start == 0)
+			*str = character;
+		else start--;
+
+		if (end == 0) break;
+		else end--;
+
+		str++;
+	}
+}
+
 void print_line_animated(int length, char *line)
 {
 	bool print = false;	
 	char beats[4] = {'\0'};
 	int start = 0, end = 0;
 	long int ms;
+	bool skip = false;
 
 	// Print lines gradually with delay to animate line
 	// Speed is based on beats read from the file
@@ -75,19 +95,20 @@ void print_line_animated(int length, char *line)
 		if (line[i] == '[')
 		{
 			print = false;
-			start = i + 1;
+			start = i;
 			beats[0] = '\0';
 		}
 		else if (line[i] == ']')
 		{
 			print = true;
-			end = i - 1;
+			end = i;
 		}
 		else if (print)
 		{
 			if (beats[0] == '\0')
 			{
-				str_copy_index(beats, line, start, end, 4);
+				str_copy_index(beats, line, start + 1, end - 1, 4);
+				str_replace_index(line, '~', start, end);
 				ms = strtol(beats, NULL, 10);
 			}
 
@@ -96,6 +117,7 @@ void print_line_animated(int length, char *line)
 			printf("\r");
 			for (int j = 0; j <= i; j++)
 			{
+				if (line[j] == '~') continue;
 				printf("%c", line[j]);
 			}
 			fflush(stdout);
