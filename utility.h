@@ -63,11 +63,13 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 void print_line_animated(int length, char *line)
 {
 	bool read = false;	
-	char beats[BEATS_BUFFER_SIZE] = {'\0'};
-	int start = 0;
-	int end = 0;
+	char beats[4] = {'\0'};
+	int start = 0, end = 0;
+	long int ms;
 
 	// Print lines gradually with delay to animate line
+	// Speed is based on beats read from the file
+	// Beats are converted into MS
 	for (int i = 0; i < length; i++)
 	{
 		if (line[i] == '\\')
@@ -81,11 +83,11 @@ void print_line_animated(int length, char *line)
 		{
 			if (beats[0] == '\0')
 			{
-				str_copy_index(beats, line, start, end, BEATS_BUFFER_SIZE);
-				printf("Beats = %s\n", beats);
+				str_copy_index(beats, line, start, end, 4);
+				ms = strtol(beats, NULL, 10);
 			}
-			/*
-			printf("Heyo\n");
+
+			// Gradually print message
 			delay(ms);
 			printf("\r");
 			for (int j = 0; j <= i; j++)
@@ -93,7 +95,6 @@ void print_line_animated(int length, char *line)
 				printf("%c", line[j]);
 			}
 			fflush(stdout);
-			*/
 		}
 	}
 }
