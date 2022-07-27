@@ -62,7 +62,7 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 
 void print_line_animated(int length, char *line)
 {
-	bool read = false;	
+	bool print = false;	
 	char beats[4] = {'\0'};
 	int start = 0, end = 0;
 	long int ms;
@@ -72,14 +72,18 @@ void print_line_animated(int length, char *line)
 	// Beats are converted into MS
 	for (int i = 0; i < length; i++)
 	{
-		if (line[i] == '\\')
+		if (line[i] == '[')
 		{
-			read = !read;
-			if (start <= end) start = i + 1;
-			else end = i - 1;
-			if (read) beats[0] = '\0';
+			print = false;
+			start = i + 1;
+			beats[0] = '\0';
 		}
-		else if (read == false)
+		else if (line[i] == ']')
+		{
+			print = true;
+			end = i - 1;
+		}
+		else if (print)
 		{
 			if (beats[0] == '\0')
 			{
