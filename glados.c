@@ -11,6 +11,13 @@ void play_song(FILE *stream, int bpm)
 	int letters = 0;
 	char **lines = get_lines(&n, stream);
 
+	printf("3...\n");
+	delay(1000);
+	printf("2...\n");
+	delay(1000);
+	printf("1...\n");
+	delay(1000);
+
 	// Print each line
 	for (int i = 0; i < n; i++)
 	{
@@ -18,7 +25,6 @@ void play_song(FILE *stream, int bpm)
 
 		letters = strlen(line);
 		print_line_animated(letters, line);
-		printf("\n");
 	}
 
 	// Free lines

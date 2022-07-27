@@ -1,7 +1,6 @@
 #include <stdbool.h>
 
 #define BUFFER_SIZE 4096
-#define BEATS_BUFFER_SIZE 4
 
 void delay(int ms) { usleep(ms * 1000); }
 
@@ -82,21 +81,18 @@ void str_replace_index(char *str, const char character, int start, int end)
 void print_line_animated(int length, char *line)
 {
 	bool print = false;	
-	char beats[4] = {'\0'};
+	char buffer[4] = {'\0'};
 	int start = 0, end = 0;
 	long int ms;
-	bool skip = false;
 
-	// Print lines gradually with delay to animate line
-	// Speed is based on beats read from the file
-	// Beats are converted into MS
+	// Iterate character by character
 	for (int i = 0; i < length; i++)
 	{
 		if (line[i] == '[')
 		{
 			print = false;
 			start = i;
-			beats[0] = '\0';
+			buffer[0] = '\0';
 		}
 		else if (line[i] == ']')
 		{
@@ -105,22 +101,25 @@ void print_line_animated(int length, char *line)
 		}
 		else if (print)
 		{
-			if (beats[0] == '\0')
+			// If buffer is empty, prepare for printing
+			if (buffer[0] == '\0')
 			{
-				str_copy_index(beats, line, start + 1, end - 1, 4);
+				str_copy_index(buffer, line, start + 1, end - 1, 4);
 				str_replace_index(line, '~', start, end);
-				ms = strtol(beats, NULL, 10);
+				ms = strtol(buffer, NULL, 10);
 			}
 
-			// Gradually print message
+			// Gradually print message with delay
 			delay(ms);
-			printf("\r");
+			printf("\033[5C\r");
 			for (int j = 0; j <= i; j++)
 			{
 				if (line[j] == '~') continue;
-				printf("%c", line[j]);
+				if (line[j] == '\\') printf("");
+				else printf("%c", line[j]);
 			}
 			fflush(stdout);
 		}
 	}
+	printf("\n");
 }
