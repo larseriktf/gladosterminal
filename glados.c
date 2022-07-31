@@ -2,8 +2,132 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include "utility.h"
+#include <stdbool.h>
 #include "tc.h"
+
+#define BUFFER_SIZE 4096
+
+void delay(int ms) { usleep(ms * 1000); }
+
+char **get_lines(int *n, FILE *stream)
+{
+	char **lines;
+	char buffer[BUFFER_SIZE];
+	int length = 0;
+
+	// Read and assign n from first line in stream
+	fgets(buffer, BUFFER_SIZE, stream);	
+	*n = atoi(buffer);
+
+	lines = malloc(*n * sizeof(char *));
+
+	// Fill lines array and eliminate \n character
+	for (int i = 0; i < *n; i++)
+	{
+		fgets(buffer, BUFFER_SIZE, stream);
+		length = strlen(buffer);
+		buffer[length - 1] = '\0';
+		lines[i] = malloc(length * sizeof(char));
+		strcpy(lines[i], buffer);
+	}
+
+	return lines;
+}
+
+char *str_copy_index(char *dest, const char *src, int start, int end, int size)
+{
+	if (dest == NULL) return NULL;
+	if (start > end) return NULL;
+	if (end - start > size) return NULL;
+
+	char *ptr = dest;
+
+	// Copy portion of string with pointer arithmetic
+	// Inspired by Portfolio Courses: https://portfoliocourses.com/
+	while (*src != '\0')
+	{
+		// Count down start and end to define portion of the string
+		if (start == 0)
+		{
+			*dest = *src;
+			dest++;
+		}
+		else start--;
+
+		if (end == 0) break;
+		else end--;
+
+		src++;
+	}
+	*dest = '\0';
+	
+	return ptr;
+}
+
+void str_replace_index(char *str, const char character, int start, int end)
+{
+	if (str == NULL) return;
+	if (start > end) return;
+
+	while (*str != '\0')
+	{
+		// Count down start and end to define portion of the string
+		if (start == 0)
+			*str = character;
+		else start--;
+
+		if (end == 0) break;
+		else end--;
+
+		str++;
+	}
+}
+
+void print_line_animated(int length, char *line)
+{
+	bool print = false;	
+	char buffer[4] = {'\0'};
+	int start = 0, end = 0;
+	long int ms;
+
+	// Iterate character by character
+	for (int i = 0; i < length; i++)
+	{
+		if (line[i] == '[')
+		{
+			print = false;
+			start = i;
+			buffer[0] = '\0';
+		}
+		else if (line[i] == ']')
+		{
+			print = true;
+			end = i;
+		}
+		else if (print)
+		{
+			// If buffer is empty, prepare for printing
+			if (buffer[0] == '\0')
+			{
+				str_copy_index(buffer, line, start + 1, end - 1, 4);
+				str_replace_index(line, '~', start, end);
+				ms = strtol(buffer, NULL, 10);
+			}
+
+			// Gradually print message with delay
+			delay(ms);
+			printf("\r");
+			for (int j = 0; j <= i; j++)
+			{
+				if (line[j] == '~') continue;
+				if (line[j] == '\\') printf("");
+				else printf("%c", line[j]);
+			}
+			fflush(stdout);
+		}
+	}
+	printf("\n");
+}
 
 void play_song(FILE *stream, int bpm)
 {
