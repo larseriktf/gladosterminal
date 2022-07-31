@@ -111,7 +111,7 @@ void print_line_animated(int length, char *line)
 
 			// Gradually print message with delay
 			delay(ms);
-			printf("\033[5C\r");
+			printf("\r");
 			for (int j = 0; j <= i; j++)
 			{
 				if (line[j] == '~') continue;
