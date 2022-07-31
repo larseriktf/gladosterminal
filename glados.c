@@ -1,3 +1,5 @@
+/* Headers */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -5,9 +7,58 @@
 #include <stdbool.h>
 #include "tc.h"
 
+/* Constants and Macros */
+
 #define BUFFER_SIZE 4096
 
-void delay(int ms) { usleep(ms * 1000); }
+/* Function Declaration */
+
+char **get_lines(int *n, FILE *stream);
+void str_replace_index(char *str, const char character, int start, int end);
+char *str_copy_index(char *dest, const char *src, int start, int end, int size);
+void delay(int ms);
+void print_line_animated(int length, char *line);
+void play_song(FILE *stream, int bpm);
+int main();
+
+/* Function Implementation */
+
+int main()
+{
+	FILE *stream = NULL;
+	stream = fopen("lyrics.txt", "r");
+
+	if (!stream)
+	{
+		printf("error opening file\n");
+		return 1;
+	}
+
+	play_song(stream, 120);
+	fclose(stream);
+	return 0;
+}
+
+void play_song(FILE *stream, int bpm)
+{
+	int n = 0;
+	int letters = 0;
+	char **lines = get_lines(&n, stream);
+
+	// Print each line
+	for (int i = 0; i < n; i++)
+	{
+		char *line = lines[i];
+
+		letters = strlen(line);
+		print_line_animated(letters, line);
+	}
+
+	// Free lines
+	for (int i = 0; i < n; i++)
+		free(lines[i]);	
+	free(lines);
+}
 
 char **get_lines(int *n, FILE *stream)
 {
@@ -32,55 +83,6 @@ char **get_lines(int *n, FILE *stream)
 	}
 
 	return lines;
-}
-
-char *str_copy_index(char *dest, const char *src, int start, int end, int size)
-{
-	if (dest == NULL) return NULL;
-	if (start > end) return NULL;
-	if (end - start > size) return NULL;
-
-	char *ptr = dest;
-
-	// Copy portion of string with pointer arithmetic
-	// Inspired by Portfolio Courses: https://portfoliocourses.com/
-	while (*src != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-		{
-			*dest = *src;
-			dest++;
-		}
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		src++;
-	}
-	*dest = '\0';
-	
-	return ptr;
-}
-
-void str_replace_index(char *str, const char character, int start, int end)
-{
-	if (str == NULL) return;
-	if (start > end) return;
-
-	while (*str != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-			*str = character;
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		str++;
-	}
 }
 
 void print_line_animated(int length, char *line)
@@ -129,39 +131,53 @@ void print_line_animated(int length, char *line)
 	printf("\n");
 }
 
-void play_song(FILE *stream, int bpm)
+void delay(int ms) { usleep(ms * 1000); }
+
+char *str_copy_index(char *dest, const char *src, int start, int end, int size)
 {
-	int n = 0;
-	int letters = 0;
-	char **lines = get_lines(&n, stream);
+	if (dest == NULL) return NULL;
+	if (start > end) return NULL;
+	if (end - start > size) return NULL;
 
-	// Print each line
-	for (int i = 0; i < n; i++)
+	char *ptr = dest;
+
+	// Copy portion of string with pointer arithmetic
+	// Inspired by Portfolio Courses: https://portfoliocourses.com/
+	while (*src != '\0')
 	{
-		char *line = lines[i];
+		// Count down start and end to define portion of the string
+		if (start == 0)
+		{
+			*dest = *src;
+			dest++;
+		}
+		else start--;
 
-		letters = strlen(line);
-		print_line_animated(letters, line);
+		if (end == 0) break;
+		else end--;
+
+		src++;
 	}
-
-	// Free lines
-	for (int i = 0; i < n; i++)
-		free(lines[i]);	
-	free(lines);
+	*dest = '\0';
+	
+	return ptr;
 }
 
-int main()
+void str_replace_index(char *str, const char character, int start, int end)
 {
-	FILE *stream = NULL;
-	stream = fopen("lyrics.txt", "r");
+	if (str == NULL) return;
+	if (start > end) return;
 
-	if (!stream)
+	while (*str != '\0')
 	{
-		printf("error opening file\n");
-		return 1;
-	}
+		// Count down start and end to define portion of the string
+		if (start == 0)
+			*str = character;
+		else start--;
 
-	play_song(stream, 120);
-	fclose(stream);
-	return 0;
+		if (end == 0) break;
+		else end--;
+
+		str++;
+	}
 }
