@@ -45,6 +45,9 @@ void play_song(FILE *stream, int bpm)
 	int letters = 0;
 	char **lines = get_lines(&n, stream);
 
+	printf("\033[38;2;255;0;0m");
+	printf("\033[48;2;0;0;0m");
+
 	// Print each line
 	for (int i = 0; i < n; i++)
 	{
@@ -53,6 +56,8 @@ void play_song(FILE *stream, int bpm)
 		letters = strlen(line);
 		print_line_animated(letters, line);
 	}
+
+	printf("\033[0m\n");
 
 	// Free lines
 	for (int i = 0; i < n; i++)
