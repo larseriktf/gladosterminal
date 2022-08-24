@@ -58,16 +58,26 @@ int main()
 
 void draw()
 {
+	// Basic settings
 	int rows = 0;
 	int cols = 0;
-
 	get_rows_cols(&rows, &cols);
-
 	clear_screen();
 	printf("%s%s", COLOR_FG, COLOR_BG);
-	move_cursor(8, 10);
-	//printf("%s%sSome text! ... \n%s", COLOR_FG, COLOR_BG, COLOR_NRM);
-	printf("Some text! :D %d, %d\n", rows, cols);
+
+	// Actual drawing
+	move_cursor(0, 0);
+	for (int i = 0; i < cols; i++)
+	{
+		printf("%c", (i % 2 == 0) ? '_' : ' ');
+	}
+	printf("\n");
+	printf("\"_\" = %d, \'_\' = %d\n", "_", '_');
+	printf("\" \" = %d, \' \' = %d\n", " ", ' ');
+	printf("%d = %c\n", 847323245, 847323245);
+	printf("%d = %c\n", 847323267, 847323267);
+
+	// Reset effects
 	printf("%s", COLOR_NRM);
 }
 
