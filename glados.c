@@ -59,23 +59,56 @@ int main()
 void draw()
 {
 	// Basic settings
-	int rows = 0;
-	int cols = 0;
+	int rows = 0, cols = 0;
+	int i = 0, k = 0;
+	int col1_w = 72;
+	int col1_h = 30;
+	int col2_w = 72;
+	int col2_h = 20;
 	get_rows_cols(&rows, &cols);
 	clear_screen();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
 	// Actual drawing
-	move_cursor(0, 0);
-	for (int i = 0; i < cols; i++)
+	// Fill background with black
+	for (i = 0; i < rows; i++)
 	{
-		printf("%c", (i % 2 == 0) ? '_' : ' ');
+		for (k = 0; k < cols; k++) printf(" ");
+		printf("\n");
+	}
+
+	// First column
+	for (i = 0; i < col1_w; i += 2)
+	{
+		move_cursor(i, 0);
+		printf("_");
+		move_cursor(i, col1_h);
+		printf("_");
+	}
+	for (i = 2; i < col1_h; i += 2)
+	{
+		move_cursor(0, i);
+		printf("|");
+		move_cursor(col1_w, i);
+		printf("|");
 	}
 	printf("\n");
-	printf("\"_\" = %d, \'_\' = %d\n", "_", '_');
-	printf("\" \" = %d, \' \' = %d\n", " ", ' ');
-	printf("%d = %c\n", 847323245, 847323245);
-	printf("%d = %c\n", 847323267, 847323267);
+
+	// Second column
+	for (i = 0; i < col2_w; i += 2)
+	{
+		move_cursor(i + (col1_w + 2), 0);
+		printf("_");
+		move_cursor(i + (col1_w + 2), col2_h);
+		printf("_");
+	}
+	for (i = 2; i < col2_h; i += 2)
+	{
+		move_cursor(0 + (col1_w + 2), i);
+		printf("|");
+		move_cursor(col2_w + (col1_w + 2), i);
+		printf("|");
+	}
 
 	// Reset effects
 	printf("%s", COLOR_NRM);

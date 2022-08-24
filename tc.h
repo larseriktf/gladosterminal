@@ -13,7 +13,7 @@
 // Macros
 
 #define clear_screen() puts("\033[2J")
-#define move_cursor(X, Y) printf("\033[%d;%dH", Y, X)
+#define move_cursor(X, Y) printf("\033[%d;%dH", Y+1, X+1)
 #define enter_screen() puts("\033[?1049h\033[H")
 #define exit_screen() puts("\033[?1049l")
 
