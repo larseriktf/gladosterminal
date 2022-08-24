@@ -19,33 +19,11 @@
 
 // Function Declarations
 
-void echo_off();
 void echo_on();
-void signal_resize();
+void echo_off();
 void get_rows_cols(int *rows, int *cols);
-void draw();
 
 // Functions Implementations
-
-void signal_resize()
-{
-	draw();
-}
-
-void draw()
-{
-	int rows = 0;
-	int cols = 0;
-
-	get_rows_cols(&rows, &cols);
-
-	clear_screen();
-	printf("%s%s", COLOR_FG, COLOR_BG);
-	move_cursor(8, 10);
-	//printf("%s%sSome text! ... \n%s", COLOR_FG, COLOR_BG, COLOR_NRM);
-	printf("Some text! :D %d, %d\n", rows, cols);
-	printf("%s", COLOR_NRM);
-}
 
 void get_rows_cols(int *rows, int *cols)
 {

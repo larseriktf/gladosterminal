@@ -19,17 +19,19 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size);
 void delay(int ms);
 void print_line_animated(int length, char *line);
 void play_song(FILE *stream, int bpm);
+void draw();
 int main();
 
 /* Function Implementation */
 
 int main()
 {
-	signal(SIGWINCH, &signal_resize);
+	// Set terminal settings
+	signal(SIGWINCH, &draw);
 	enter_screen();
 	echo_off();
-	draw();
-	/*
+
+	// Load lyrics file
 	FILE *stream = NULL;
 	stream = fopen("lyrics.txt", "r");
 
@@ -39,17 +41,34 @@ int main()
 		return 1;
 	}
 
-	play_song(stream, 120);
-	fclose(stream);
-	*/
+	draw();
+
+	// play_song(stream, 120);
 
 	// Keep application running
 	char c = getchar();
 
+	// Reset terminal settings
+	fclose(stream);
 	exit_screen();
 	echo_on();
 
 	return 0;
+}
+
+void draw()
+{
+	int rows = 0;
+	int cols = 0;
+
+	get_rows_cols(&rows, &cols);
+
+	clear_screen();
+	printf("%s%s", COLOR_FG, COLOR_BG);
+	move_cursor(8, 10);
+	//printf("%s%sSome text! ... \n%s", COLOR_FG, COLOR_BG, COLOR_NRM);
+	printf("Some text! :D %d, %d\n", rows, cols);
+	printf("%s", COLOR_NRM);
 }
 
 void play_song(FILE *stream, int bpm)
