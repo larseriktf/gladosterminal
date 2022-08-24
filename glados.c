@@ -25,6 +25,11 @@ int main();
 
 int main()
 {
+	signal(SIGWINCH, &signal_resize);
+	enter_screen();
+	echo_off();
+	draw();
+	/*
 	FILE *stream = NULL;
 	stream = fopen("lyrics.txt", "r");
 
@@ -36,6 +41,14 @@ int main()
 
 	play_song(stream, 120);
 	fclose(stream);
+	*/
+
+	// Keep application running
+	char c = getchar();
+
+	exit_screen();
+	echo_on();
+
 	return 0;
 }
 
