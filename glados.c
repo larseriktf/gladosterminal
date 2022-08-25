@@ -19,7 +19,7 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size);
 void delay(int ms);
 void print_line_animated(int length, char *line);
 void play_song(FILE *stream, int bpm);
-void draw_column(int max_w, int max_h, int l_margin, int v_paddng);
+void draw_column(int max_w, int max_h, int l_margin, int v_padding);
 void draw();
 int main();
 
@@ -67,10 +67,10 @@ void draw()
 	clear_screen();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
-	int col1_max_w = 71, col1_max_h = 30;
-	int col1_min_w = 30, col1_min_h = 30;
-	int col2_max_w = 72, col2_max_h = 20;
-	int col2_min_w = 30, col2_min_h = 30;
+	int col1_max_w = 21, col1_max_h = 10;
+	int col1_min_w = 5,  col1_min_h = 5;
+	int col2_max_w = 21, col2_max_h = 10;
+	int col2_min_w = 5,  col2_min_h = 5;
 
 	// Actual drawing
 	// Fill background with black
@@ -80,75 +80,28 @@ void draw()
 		printf("\n");
 	}
 
-	// First column
-	/*
-	for (i = 0; i < col1_max_w; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(i, 0);
-			printf("_");
-			move_cursor(i, col1_max_h);
-			printf("_");
-		}
-	}
-	for (i = 2; i < col1_max_h; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(0, i);
-			printf("|");
-			move_cursor(col1_max_w, i);
-			printf("|");
-		}
-	}
-	*/
-
+	// Draw column 1 and 2
 	draw_column(col1_max_w, col1_max_h, 0, 0);
-	printf("\n");
 	draw_column(col2_max_w, col2_max_h, col1_max_w + 2, 2);
-
-	// Second column
-	/*
-	for (i = 0; i < col2_max_w; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(i + (col1_max_w + 2), 0);
-			printf("_");
-			move_cursor(i + (col1_max_w + 2), col2_max_h);
-			printf("_");
-		}
-	}
-	for (i = 2; i < col2_max_h; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(0 + (col1_max_w + 2), i);
-			printf("|");
-			move_cursor(col2_max_w + (col1_max_w + 2), i);
-			printf("|");
-		}
-	}
-	*/
 
 	// Reset effects
 	printf("%s", COLOR_NRM);
 }
 
-void draw_column(int max_w, int max_h, int l_margin, int v_paddng)
+void draw_column(int max_w, int max_h, int l_margin, int v_padding)
 {
-	for (int i = 0; i < max_w; i++)
+	int i = 0;
+	for (i = 0 + v_padding; i < max_w - v_padding; i++)
 	{
 		if (i % 2 == 0)
 		{
 			move_cursor(i + l_margin, 0);
 			printf("_");
-			move_cursor(i + l_margin, max_h);
+			move_cursor(i + l_margin, max_h-1);
 			printf("_");
 		}
 	}
-	for (int i = 2; i < max_h; i++)
+	for (i = 1; i < max_h-1; i++)
 	{
 		if (i % 2 == 0)
 		{
