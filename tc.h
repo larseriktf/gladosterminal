@@ -9,6 +9,7 @@
 #define COLOR_NRM "\033[0m"
 #define COLOR_FG  "\033[38;2;210;155;20m"
 #define COLOR_BG  "\033[48;2;0;0;0m"
+#define FX_BLINK  "\033[5m"
 
 // Macros
 
@@ -16,6 +17,8 @@
 #define move_cursor(X, Y) printf("\033[%d;%dH", Y+1, X+1)
 #define enter_screen() puts("\033[?1049h\033[H")
 #define exit_screen() puts("\033[?1049l")
+#define hide_cursor() puts("\033[?25l")
+#define show_cursor() puts("\033[?25h")
 
 // Function Declarations
 
