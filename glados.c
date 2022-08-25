@@ -62,27 +62,32 @@ int main()
 void draw()
 {
 	// Basic settings
-	int rows = 0, cols = 0, i = 0, k = 0;
+	int rows = 0, cols = 0;
 	get_rows_cols(&rows, &cols);
 	clear_screen();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
-	int col1_max_w = 21, col1_max_h = 10;
-	int col1_min_w = 5,  col1_min_h = 5;
-	int col2_max_w = 21, col2_max_h = 10;
-	int col2_min_w = 5,  col2_min_h = 5;
+	int col1_min_w = 31, col1_max_w = 98;
+	int col1_min_h = 20, col1_max_h = 64;
+	int col2_min_w = 31, col2_max_w = 71;
+	int col2_min_h = 10, col2_max_h = 20;
+
+	int col1_w = col1_max_w, col1_h = col1_max_h;
+	int col2_w = col2_max_w, col2_h = col2_max_h;
+
+	int spacing = 2;
 
 	// Actual drawing
 	// Fill background with black
-	for (i = 0; i < rows; i++)
+	for (int i = 0; i < rows; i++)
 	{
-		for (k = 0; k < cols; k++) printf(" ");
+		for (int k = 0; k < cols; k++) printf(" ");
 		printf("\n");
 	}
 
 	// Draw column 1 and 2
-	draw_column(col1_max_w, col1_max_h, 0, 0);
-	draw_column(col2_max_w, col2_max_h, col1_max_w + 2, 2);
+	draw_column(col1_w, col1_h, 0, 0);
+	//draw_column(col2_w, col2_h, col1_w + spacing, 2);
 
 	// Reset effects
 	printf("%s", COLOR_NRM);
@@ -107,7 +112,7 @@ void draw_column(int max_w, int max_h, int l_margin, int v_padding)
 		{
 			move_cursor(l_margin, i);
 			printf("|");
-			move_cursor(l_margin + max_w, i);
+			move_cursor(l_margin + max_w - 1, i);
 			printf("|");
 		}
 	}
