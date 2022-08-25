@@ -19,6 +19,7 @@ char *str_copy_index(char *dest, const char *src, int start, int end, int size);
 void delay(int ms);
 void print_line_animated(int length, char *line);
 void play_song(FILE *stream, int bpm);
+void draw_column(int max_w, int max_h, int l_margin, int v_padding);
 void draw();
 int main();
 
@@ -30,6 +31,7 @@ int main()
 	signal(SIGWINCH, &draw);
 	enter_screen();
 	echo_off();
+	hide_cursor();
 
 	// Load lyrics file
 	FILE *stream = NULL;
@@ -52,6 +54,7 @@ int main()
 	fclose(stream);
 	exit_screen();
 	echo_on();
+	show_cursor();
 
 	return 0;
 }
@@ -60,58 +63,59 @@ void draw()
 {
 	// Basic settings
 	int rows = 0, cols = 0;
-	int i = 0, k = 0;
-	int col1_w = 72;
-	int col1_h = 30;
-	int col2_w = 72;
-	int col2_h = 20;
 	get_rows_cols(&rows, &cols);
 	clear_screen();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
+	int col1_min_w = 31, col1_max_w = 98;
+	int col1_min_h = 20, col1_max_h = 64;
+	int col2_min_w = 31, col2_max_w = 71;
+	int col2_min_h = 10, col2_max_h = 20;
+
+	int col1_w = col1_max_w, col1_h = col1_max_h;
+	int col2_w = col2_max_w, col2_h = col2_max_h;
+
+	int spacing = 2;
+
 	// Actual drawing
 	// Fill background with black
-	for (i = 0; i < rows; i++)
+	for (int i = 0; i < rows; i++)
 	{
-		for (k = 0; k < cols; k++) printf(" ");
+		for (int k = 0; k < cols; k++) printf(" ");
 		printf("\n");
 	}
 
-	// First column
-	for (i = 0; i < col1_w; i += 2)
-	{
-		move_cursor(i, 0);
-		printf("_");
-		move_cursor(i, col1_h);
-		printf("_");
-	}
-	for (i = 2; i < col1_h; i += 2)
-	{
-		move_cursor(0, i);
-		printf("|");
-		move_cursor(col1_w, i);
-		printf("|");
-	}
-	printf("\n");
-
-	// Second column
-	for (i = 0; i < col2_w; i += 2)
-	{
-		move_cursor(i + (col1_w + 2), 0);
-		printf("_");
-		move_cursor(i + (col1_w + 2), col2_h);
-		printf("_");
-	}
-	for (i = 2; i < col2_h; i += 2)
-	{
-		move_cursor(0 + (col1_w + 2), i);
-		printf("|");
-		move_cursor(col2_w + (col1_w + 2), i);
-		printf("|");
-	}
+	// Draw column 1 and 2
+	draw_column(col1_w, col1_h, 0, 0);
+	//draw_column(col2_w, col2_h, col1_w + spacing, 2);
 
 	// Reset effects
 	printf("%s", COLOR_NRM);
+}
+
+void draw_column(int max_w, int max_h, int l_margin, int v_padding)
+{
+	int i = 0;
+	for (i = 0 + v_padding; i < max_w - v_padding; i++)
+	{
+		if (i % 2 == 0)
+		{
+			move_cursor(i + l_margin, 0);
+			printf("_");
+			move_cursor(i + l_margin, max_h-1);
+			printf("_");
+		}
+	}
+	for (i = 1; i < max_h-1; i++)
+	{
+		if (i % 2 == 0)
+		{
+			move_cursor(l_margin, i);
+			printf("|");
+			move_cursor(l_margin + max_w - 1, i);
+			printf("|");
+		}
+	}
 }
 
 void play_song(FILE *stream, int bpm)
