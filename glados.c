@@ -5,21 +5,22 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "tc.h"
+#include "utility.h"
 
 /* Constants and Macros */
 
-#define BUFFER_SIZE 4096
+#define COL1_W 64
+#define COL1_H 40
+#define COL2_W 64
+#define COL2_H 40
 
 /* Function Declaration */
 
-void str_replace_index(char *str, const char character, int start, int end);
-char *str_copy_index(char *dest, const char *src, int start, int end, int size);
-void delay(int ms);
 void print_line_animated(int length, char *line, int x, int y);
 void play_song(char **lines, int n);
-void draw_column(int max_w, int max_h, int l_margin, int v_padding);
-void clear(int x1, int y1, int x2, int y2);
+void draw_column(int max_w, int max_h, int l_margin);
 void draw();
 char **get_lines(int *n, FILE *stream);
 int main();
@@ -38,12 +39,8 @@ int main()
 	// Load lyrics file
 	FILE *stream = NULL;
 	stream = fopen("lyrics.txt", "r");
-
 	if (!stream)
-	{
-		printf("error opening file\n");
-		return 1;
-	}
+		return error("error opening file\n");
 
 	// Basic settings
 	int n = 0;
@@ -52,7 +49,7 @@ int main()
 	draw();
 	play_song(lines, n);
 
-	// Keep application running
+	// Keep application running until keypress
 	char c = getchar();
 
 	// Reset terminal settings
@@ -65,69 +62,23 @@ int main()
 	return 0;
 }
 
-char **get_lines(int *n, FILE *stream)
-{
-	char **lines;
-	char buffer[BUFFER_SIZE];
-	int length = 0;
-
-	// Read and assign n from first line in stream
-	fgets(buffer, BUFFER_SIZE, stream);	
-	*n = atoi(buffer);
-
-	lines = malloc(*n * sizeof(char *));
-
-	// Fill lines array and eliminate \n character
-	for (int i = 0; i < *n; i++)
-	{
-		fgets(buffer, BUFFER_SIZE, stream);
-		length = strlen(buffer);
-		buffer[length - 1] = '\0';
-		lines[i] = malloc(length * sizeof(char));
-		strcpy(lines[i], buffer);
-	}
-
-	return lines;
-}
-
 void draw()
 {
 	int rows = 0, cols = 0;
 	get_rows_cols(&rows, &cols);
 
-	int col1_min_w = 31, col1_max_w = 98;
-	int col1_min_h = 20, col1_max_h = 64;
-	int col2_min_w = 31, col2_max_w = 71;
-	int col2_min_h = 10, col2_max_h = 20;
-
-	int col1_w = col1_max_w, col1_h = col1_max_h;
-	int col2_w = col2_max_w, col2_h = col2_max_h;
-
 	int spacing = 2;
 
 	// Actual drawing
 	clear(0, 0, cols, rows);
-	// Draw column 1 and 2
-	draw_column(col1_w, col1_h, 0, 0);
-	//draw_column(col2_w, col2_h, col1_w + spacing, 2);
+	draw_column(COL1_W, COL1_H, 0 );
+	//draw_column(COL2_W, COL2_H, COL1_W + spacing);
 }
 
-void clear(int x1, int y1, int x2, int y2)
-{
-	for (int i = y1; i < y2; i++)
-	{
-		for (int k = x1; k < x2; k++)
-		{
-			move_cursor(x1 + k, y1 + i);
-			printf(" ");
-		}
-	}
-}
-
-void draw_column(int max_w, int max_h, int l_margin, int v_padding)
+void draw_column(int max_w, int max_h, int l_margin)
 {
 	int i = 0;
-	for (i = 0 + v_padding; i < max_w - v_padding; i++)
+	for (i = 0; i < max_w; i++)
 	{
 		if (i % 2 == 0)
 		{
@@ -152,8 +103,6 @@ void draw_column(int max_w, int max_h, int l_margin, int v_padding)
 void play_song(char **lines, int n)
 {
 	int letters = 0, iterator = 0;
-	int rows = 0, cols = 0;
-	get_rows_cols(&rows, &cols);
 
 	// Print each line
 	for (int i = 0; i < n; i++)
@@ -163,14 +112,13 @@ void play_song(char **lines, int n)
 
 		print_line_animated(letters, line, 2, iterator + 1);
 
-		// @TODO: optimize this
 		// Wrap around
-		if (iterator >= rows - 1)
+		if (iterator == COL1_H - 3)
 		{
-			clear(1, 1, 100, rows - 1);
+			clear(1, 1, COL1_W - 1, COL1_H - 1);
 			iterator = 0;
 		}
-		iterator++;
+		else iterator++;
 	}
 
 	// Free lines
@@ -226,53 +174,3 @@ void print_line_animated(int length, char *line, int x, int y)
 	}
 }
 
-void delay(int ms) { usleep(ms * 1000); }
-
-char *str_copy_index(char *dest, const char *src, int start, int end, int size)
-{
-	if (dest == NULL) return NULL;
-	if (start > end) return NULL;
-	if (end - start > size) return NULL;
-
-	char *ptr = dest;
-
-	// Copy portion of string with pointer arithmetic
-	// Inspired by Portfolio Courses: https://portfoliocourses.com/
-	while (*src != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-		{
-			*dest = *src;
-			dest++;
-		}
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		src++;
-	}
-	*dest = '\0';
-	
-	return ptr;
-}
-
-void str_replace_index(char *str, const char character, int start, int end)
-{
-	if (str == NULL) return;
-	if (start > end) return;
-
-	while (*str != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-			*str = character;
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		str++;
-	}
-}
