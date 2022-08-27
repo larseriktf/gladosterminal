@@ -19,6 +19,7 @@ void delay(int ms);
 void print_line_animated(int length, char *line, int x, int y);
 void play_song(char **lines, int n);
 void draw_column(int max_w, int max_h, int l_margin, int v_padding);
+void clear(int x1, int y1, int x2, int y2);
 void draw();
 char **get_lines(int *n, FILE *stream);
 int main();
@@ -44,6 +45,7 @@ int main()
 		return 1;
 	}
 
+	// Basic settings
 	int n = 0;
 	char **lines = get_lines(&n, stream);
 
@@ -90,7 +92,6 @@ char **get_lines(int *n, FILE *stream)
 
 void draw()
 {
-	// Basic settings
 	int rows = 0, cols = 0;
 	get_rows_cols(&rows, &cols);
 
@@ -105,16 +106,22 @@ void draw()
 	int spacing = 2;
 
 	// Actual drawing
-	// Fill background with black
-	for (int i = 0; i < rows; i++)
-	{
-		for (int k = 0; k < cols; k++) printf(" ");
-		printf("\n");
-	}
-
+	clear(0, 0, cols, rows);
 	// Draw column 1 and 2
 	draw_column(col1_w, col1_h, 0, 0);
 	//draw_column(col2_w, col2_h, col1_w + spacing, 2);
+}
+
+void clear(int x1, int y1, int x2, int y2)
+{
+	for (int i = y1; i < y2; i++)
+	{
+		for (int k = x1; k < x2; k++)
+		{
+			move_cursor(x1 + k, y1 + i);
+			printf(" ");
+		}
+	}
 }
 
 void draw_column(int max_w, int max_h, int l_margin, int v_padding)
@@ -144,14 +151,26 @@ void draw_column(int max_w, int max_h, int l_margin, int v_padding)
 
 void play_song(char **lines, int n)
 {
-	int letters = 0;
+	int letters = 0, iterator = 0;
+	int rows = 0, cols = 0;
+	get_rows_cols(&rows, &cols);
+
 	// Print each line
 	for (int i = 0; i < n; i++)
 	{
 		char *line = lines[i];
 		letters = strlen(line);
 
-		print_line_animated(letters, line, 2, i + 1);
+		print_line_animated(letters, line, 2, iterator + 1);
+
+		// @TODO: optimize this
+		// Wrap around
+		if (iterator >= rows - 1)
+		{
+			clear(1, 1, 100, rows - 1);
+			iterator = 0;
+		}
+		iterator++;
 	}
 
 	// Free lines
