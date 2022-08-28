@@ -5,22 +5,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
 #include "tc.h"
+#include "utility.h"
 
 /* Constants and Macros */
 
-#define BUFFER_SIZE 4096
+#define COL1_W 64
+#define COL1_H 40
+#define COL2_W 64
+#define COL2_H 40
 
 /* Function Declaration */
 
-char **get_lines(int *n, FILE *stream);
-void str_replace_index(char *str, const char character, int start, int end);
-char *str_copy_index(char *dest, const char *src, int start, int end, int size);
-void delay(int ms);
-void print_line_animated(int length, char *line);
-void play_song(FILE *stream, int bpm);
-void draw_column(int max_w, int max_h, int l_margin, int v_padding);
+void print_line_animated(int length, char *line, int x, int y);
+void play_song(char **lines, int n);
+void draw_column(int max_w, int max_h, int l_margin);
 void draw();
+char **get_lines(int *n, FILE *stream);
 int main();
 
 /* Function Implementation */
@@ -32,22 +34,22 @@ int main()
 	enter_screen();
 	echo_off();
 	hide_cursor();
+	printf("%s%s", COLOR_FG, COLOR_BG);
 
 	// Load lyrics file
 	FILE *stream = NULL;
 	stream = fopen("lyrics.txt", "r");
-
 	if (!stream)
-	{
-		printf("error opening file\n");
-		return 1;
-	}
+		return error("error opening file\n");
+
+	// Basic settings
+	int n = 0;
+	char **lines = get_lines(&n, stream);
 
 	draw();
+	play_song(lines, n);
 
-	// play_song(stream, 120);
-
-	// Keep application running
+	// Keep application running until keypress
 	char c = getchar();
 
 	// Reset terminal settings
@@ -55,48 +57,28 @@ int main()
 	exit_screen();
 	echo_on();
 	show_cursor();
+	printf("%s", COLOR_NRM);
 
 	return 0;
 }
 
 void draw()
 {
-	// Basic settings
 	int rows = 0, cols = 0;
 	get_rows_cols(&rows, &cols);
-	clear_screen();
-	printf("%s%s", COLOR_FG, COLOR_BG);
-
-	int col1_min_w = 31, col1_max_w = 98;
-	int col1_min_h = 20, col1_max_h = 64;
-	int col2_min_w = 31, col2_max_w = 71;
-	int col2_min_h = 10, col2_max_h = 20;
-
-	int col1_w = col1_max_w, col1_h = col1_max_h;
-	int col2_w = col2_max_w, col2_h = col2_max_h;
 
 	int spacing = 2;
 
 	// Actual drawing
-	// Fill background with black
-	for (int i = 0; i < rows; i++)
-	{
-		for (int k = 0; k < cols; k++) printf(" ");
-		printf("\n");
-	}
-
-	// Draw column 1 and 2
-	draw_column(col1_w, col1_h, 0, 0);
-	//draw_column(col2_w, col2_h, col1_w + spacing, 2);
-
-	// Reset effects
-	printf("%s", COLOR_NRM);
+	clear(0, 0, cols, rows);
+	draw_column(COL1_W, COL1_H, 0 );
+	//draw_column(COL2_W, COL2_H, COL1_W + spacing);
 }
 
-void draw_column(int max_w, int max_h, int l_margin, int v_padding)
+void draw_column(int max_w, int max_h, int l_margin)
 {
 	int i = 0;
-	for (i = 0 + v_padding; i < max_w - v_padding; i++)
+	for (i = 0; i < max_w; i++)
 	{
 		if (i % 2 == 0)
 		{
@@ -118,25 +100,26 @@ void draw_column(int max_w, int max_h, int l_margin, int v_padding)
 	}
 }
 
-void play_song(FILE *stream, int bpm)
+void play_song(char **lines, int n)
 {
-	int n = 0;
-	int letters = 0;
-	char **lines = get_lines(&n, stream);
-
-	printf("\033[38;2;255;0;0m");
-	printf("\033[48;2;0;0;0m");
+	int letters = 0, iterator = 0;
 
 	// Print each line
 	for (int i = 0; i < n; i++)
 	{
 		char *line = lines[i];
-
 		letters = strlen(line);
-		print_line_animated(letters, line);
-	}
 
-	printf("\033[0m\n");
+		print_line_animated(letters, line, 2, iterator + 1);
+
+		// Wrap around
+		if (iterator == COL1_H - 3)
+		{
+			clear(1, 1, COL1_W - 1, COL1_H - 1);
+			iterator = 0;
+		}
+		else iterator++;
+	}
 
 	// Free lines
 	for (int i = 0; i < n; i++)
@@ -144,32 +127,8 @@ void play_song(FILE *stream, int bpm)
 	free(lines);
 }
 
-char **get_lines(int *n, FILE *stream)
-{
-	char **lines;
-	char buffer[BUFFER_SIZE];
-	int length = 0;
 
-	// Read and assign n from first line in stream
-	fgets(buffer, BUFFER_SIZE, stream);	
-	*n = atoi(buffer);
-
-	lines = malloc(*n * sizeof(char *));
-
-	// Fill lines array and eliminate \n character
-	for (int i = 0; i < *n; i++)
-	{
-		fgets(buffer, BUFFER_SIZE, stream);
-		length = strlen(buffer);
-		buffer[length - 1] = '\0';
-		lines[i] = malloc(length * sizeof(char));
-		strcpy(lines[i], buffer);
-	}
-
-	return lines;
-}
-
-void print_line_animated(int length, char *line)
+void print_line_animated(int length, char *line, int x, int y)
 {
 	bool print = false;	
 	char buffer[4] = {'\0'};
@@ -192,7 +151,7 @@ void print_line_animated(int length, char *line)
 		}
 		else if (print)
 		{
-			// If buffer is empty, prepare for printing
+			// If buffer is empty, read number and prepare for printing
 			if (buffer[0] == '\0')
 			{
 				str_copy_index(buffer, line, start + 1, end - 1, 4);
@@ -201,67 +160,17 @@ void print_line_animated(int length, char *line)
 			}
 
 			// Gradually print message with delay
-			delay(ms);
-			printf("\r");
-			for (int j = 0; j <= i; j++)
+			if (line[i] == '~') continue;
+			if (line[i] == '\\') printf("");
+			else
 			{
-				if (line[j] == '~') continue;
-				if (line[j] == '\\') printf("");
-				else printf("%c", line[j]);
+				move_cursor(x, y);
+				printf("%c", line[i]);
+				x++;
 			}
+			delay(ms);
 			fflush(stdout);
 		}
 	}
-	printf("\n");
 }
 
-void delay(int ms) { usleep(ms * 1000); }
-
-char *str_copy_index(char *dest, const char *src, int start, int end, int size)
-{
-	if (dest == NULL) return NULL;
-	if (start > end) return NULL;
-	if (end - start > size) return NULL;
-
-	char *ptr = dest;
-
-	// Copy portion of string with pointer arithmetic
-	// Inspired by Portfolio Courses: https://portfoliocourses.com/
-	while (*src != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-		{
-			*dest = *src;
-			dest++;
-		}
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		src++;
-	}
-	*dest = '\0';
-	
-	return ptr;
-}
-
-void str_replace_index(char *str, const char character, int start, int end)
-{
-	if (str == NULL) return;
-	if (start > end) return;
-
-	while (*str != '\0')
-	{
-		// Count down start and end to define portion of the string
-		if (start == 0)
-			*str = character;
-		else start--;
-
-		if (end == 0) break;
-		else end--;
-
-		str++;
-	}
-}
