@@ -18,7 +18,7 @@
 
 /* Function Declaration */
 
-void print_line_animated(int length, char *line, int x, int y);
+void print_line_animated(int letters, char *line, bool *wrap, int x, int y);
 void play_song(char **lines, int n);
 void draw_column(int max_w, int max_h, int l_margin);
 void draw();
@@ -103,6 +103,7 @@ void draw_column(int max_w, int max_h, int l_margin)
 void play_song(char **lines, int n)
 {
 	int letters = 0, iterator = 0;
+	bool wrap = false;
 
 	// Print each line
 	for (int i = 0; i < n; i++)
@@ -110,13 +111,16 @@ void play_song(char **lines, int n)
 		char *line = lines[i];
 		letters = strlen(line);
 
-		print_line_animated(letters, line, 2, iterator + 1);
+		print_line_animated(letters, line, &wrap, 2,iterator + 1);
 
 		// Wrap around
-		if (iterator == COL1_H - 3)
+		if (iterator == COL1_H - 3) wrap = true;
+
+		if (wrap)
 		{
 			clear(1, 1, COL1_W - 1, COL1_H - 1);
 			iterator = 0;
+			wrap = false;
 		}
 		else iterator++;
 	}
@@ -128,7 +132,7 @@ void play_song(char **lines, int n)
 }
 
 
-void print_line_animated(int length, char *line, int x, int y)
+void print_line_animated(int letters, char *line, bool *wrap, int x, int y)
 {
 	bool print = false;	
 	char buffer[4] = {'\0'};
@@ -136,7 +140,7 @@ void print_line_animated(int length, char *line, int x, int y)
 	long int ms;
 
 	// Iterate character by character
-	for (int i = 0; i < length; i++)
+	for (int i = 0; i < letters; i++)
 	{
 		if (line[i] == '[')
 		{
@@ -161,7 +165,8 @@ void print_line_animated(int length, char *line, int x, int y)
 
 			// Gradually print message with delay
 			if (line[i] == '~') continue;
-			if (line[i] == '\\') printf("");
+			else if (line[i] == '#') *wrap = true;
+			else if (line[i] == '\\') printf("");
 			else
 			{
 				move_cursor(x, y);
