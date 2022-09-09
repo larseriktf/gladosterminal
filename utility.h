@@ -6,7 +6,7 @@
 
 void str_replace_index(char *str, const char character, int start, int end);
 char *str_copy_index(char *dest, const char *src, int start, int end, int size);
-void clear(int x1, int y1, int x2, int y2);
+void clear(int x0, int y0, int x1, int y1);
 void delay(int ms);
 char **get_lines(int *n, FILE *stream);
 int error(char *msg);
@@ -46,11 +46,11 @@ char **get_lines(int *n, FILE *stream)
 
 void delay(int ms) { usleep(ms * 1000); }
 
-void clear(int x1, int y1, int x2, int y2)
+void clear(int x0, int y0, int x1, int y1)
 {
-	for (int y = y1; y < y2; y++)
+	for (int y = y0; y < y1; y++)
 	{
-		for (int x = x1; x < x2; x++)
+		for (int x = x0; x < x1; x++)
 		{
 			move_cursor(x, y);
 			printf(" ");
