@@ -11,17 +11,21 @@
 
 /* Constants and Macros */
 
-#define COL1_W 64
-#define COL1_H 40
-#define COL2_W 64
-#define COL2_H 40
+#define LYRICS_X0 2
+#define LYRICS_Y0 1
+#define LYRICS_X1 50
+#define LYRICS_Y1 36
+
+#define CREDITS_X0 55
+#define CREDITS_Y0 1
+#define CREDITS_X1 102
+#define CREDITS_Y1 18
 
 /* Function Declaration */
 
 void print_line_animated(int letters, char *line, bool *wrap, int x, int y);
 void play_song(char **lines, int n);
-void draw_column(int max_w, int max_h, int l_margin);
-void draw();
+void draw_border(FILE *file);
 char **get_lines(int *n, FILE *stream);
 int main();
 
@@ -30,23 +34,27 @@ int main();
 int main()
 {
 	// Set terminal settings
-	signal(SIGWINCH, &draw);
+	//signal(SIGWINCH, &draw_border);
 	enter_screen();
 	echo_off();
 	hide_cursor();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
-	// Load lyrics file
-	FILE *stream = NULL;
-	stream = fopen("lyrics.txt", "r");
-	if (!stream)
-		return error("error opening file\n");
+	// Load files
+	FILE *stream = fopen("lyrics.txt", "r");
+	FILE *border = fopen("border.txt", "r");
+	FILE *ascii_art = fopen("ascii_art.txt", "r");
+
+	// Error check
+	if (!stream) return error("error opening lyrics.txt\n");
+	if (!border) return error("error opening border.txt\n");
+	if (!stream) return error("error opening ascii_art.txt\n");
 
 	// Basic settings
 	int n = 0;
 	char **lines = get_lines(&n, stream);
 
-	draw();
+	draw_border(border);
 	play_song(lines, n);
 
 	// Keep application running until keypress
@@ -62,43 +70,20 @@ int main()
 	return 0;
 }
 
-void draw()
+void draw_border(FILE *file)
 {
+	char c;
 	int rows = 0, cols = 0;
 	get_rows_cols(&rows, &cols);
 
-	int spacing = 2;
-
-	// Actual drawing
 	clear(0, 0, cols, rows);
-	draw_column(COL1_W, COL1_H, 0 );
-	//draw_column(COL2_W, COL2_H, COL1_W + spacing);
+	move_cursor(0, 0);
+
+	// Draw border from file
+	while((c = fgetc(file)) != EOF)
+		printf("%c", c);
 }
 
-void draw_column(int max_w, int max_h, int l_margin)
-{
-	int i = 0;
-	for (i = 0; i < max_w; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(i + l_margin, 0);
-			printf("_");
-			move_cursor(i + l_margin, max_h-1);
-			printf("_");
-		}
-	}
-	for (i = 1; i < max_h-1; i++)
-	{
-		if (i % 2 == 0)
-		{
-			move_cursor(l_margin, i);
-			printf("|");
-			move_cursor(l_margin + max_w - 1, i);
-			printf("|");
-		}
-	}
-}
 
 void play_song(char **lines, int n)
 {
@@ -111,14 +96,14 @@ void play_song(char **lines, int n)
 		char *line = lines[i];
 		letters = strlen(line);
 
-		print_line_animated(letters, line, &wrap, 2,iterator + 1);
+		print_line_animated(letters, line, &wrap, 2, iterator + 1);
 
 		// Wrap around
-		if (iterator == COL1_H - 3) wrap = true;
+		if (iterator == LYRICS_Y1 - 3) wrap = true;
 
 		if (wrap)
 		{
-			clear(1, 1, COL1_W - 1, COL1_H - 1);
+			clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
 			iterator = 0;
 			wrap = false;
 		}
