@@ -16,10 +16,11 @@
 #define LYRICS_X1 50
 #define LYRICS_Y1 36
 
-#define CREDITS_X0 55
-#define CREDITS_Y0 1
-#define CREDITS_X1 102
-#define CREDITS_Y1 18
+// For future credits implementation
+// #define CREDITS_X0 55
+// #define CREDITS_Y0 1
+// #define CREDITS_X1 102
+// #define CREDITS_Y1 18
 
 /* Function Declaration */
 
@@ -34,34 +35,35 @@ int main();
 int main()
 {
 	// Set terminal settings
-	//signal(SIGWINCH, &draw_border);
 	enter_screen();
 	echo_off();
 	hide_cursor();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
-	// Load files
-	FILE *stream = fopen("lyrics.txt", "r");
-	FILE *border = fopen("border.txt", "r");
-	FILE *ascii_art = fopen("ascii_art.txt", "r");
+	FILE *lyrics_stream = fopen("lyrics.txt", "r");
+	FILE *border_stream = fopen("border.txt", "r");
+	FILE *images_stream = fopen("ascii_art.txt", "r");
 
-	// Error check
-	if (!stream) return error("error opening lyrics.txt\n");
-	if (!border) return error("error opening border.txt\n");
-	if (!stream) return error("error opening ascii_art.txt\n");
+	if (!lyrics_stream) return error("error opening lyrics.txt\n");
+	if (!border_stream) return error("error opening border.txt\n");
+	if (!images_stream) return error("error opening ascii_art.txt\n");
 
 	// Basic settings
 	int n = 0;
 	char **lines = get_lines(&n, stream);
 
-	draw_border(border);
+	draw_border(border_stream);
 	play_song(lines, n);
 
 	// Keep application running until keypress
 	char c = getchar();
 
 	// Reset terminal settings
-	fclose(stream);
+
+	fclose(lyrics_stream);
+	fclose(border_stream);
+	fclose(images_stream);
+
 	exit_screen();
 	echo_on();
 	show_cursor();
