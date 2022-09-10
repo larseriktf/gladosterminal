@@ -1,17 +1,13 @@
 [90]Forms FORM-29827281-12:
 
 [90]Test Assessment Report
-
 #
-
 [4000]\[90]This was a triumph.
 
 [2000]\[90]I'm making a note here:
 
 [90]\[90]HUGE SUCCESS.
-
 #
-
 [3000]\[85]It's hard to overstate
 
 [85]\[85]my satisfaction.

@@ -24,7 +24,6 @@
 
 /* Function Declaration */
 
-void print_line_animated(int letters, char *line, bool *wrap, int x, int y);
 void play_song(FILE *stream);
 void draw_border(FILE *file);
 char **get_lines(int *n, FILE *stream);
@@ -37,7 +36,7 @@ int main()
 	// Set terminal settings
 	enter_screen();
 	echo_off();
-	hide_cursor();
+	//hide_cursor();
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
 	FILE *border_stream = fopen("border.txt", "r");
@@ -66,7 +65,7 @@ int main()
 
 	exit_screen();
 	echo_on();
-	show_cursor();
+	//show_cursor();
 	printf("%s", COLOR_NRM);
 
 	return 0;
@@ -96,27 +95,6 @@ void play_song(FILE *stream)
 
 	while((c = fgetc(stream)) != EOF)
 	{
-		switch (c)
-		{
-			case '[':
-								ms = 0;
-								print = false;
-								continue; break;
-			case ']':
-								print = true;
-								continue; break;
-			case '\n':
-								y++;
-								x = LYRICS_X0;
-								continue; break;
-			case '\\':
-								delay(ms);
-								printf("");
-								continue; break;
-			case '#': wrap = true;
-								continue; break;
-		}
-
 		if (y > LYRICS_Y1) wrap = true;
 
 		if (wrap)
@@ -124,6 +102,15 @@ void play_song(FILE *stream)
 			clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
 			y = LYRICS_Y0;
 			wrap = false;
+		}
+
+		switch (c)
+		{
+			case '[': ms = 0; print = false; continue; break;
+			case ']': print = true; continue; break;
+			case '\n': y++; x = LYRICS_X0; continue; break;
+			case '\\': delay(ms); continue; break;
+			case '#': wrap = true; continue; break;
 		}
 
 		if (print)
