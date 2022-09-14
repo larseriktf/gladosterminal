@@ -1,0 +1,82 @@
+[3060]\[108]This was a triumph.
+[2167]\[95]I'm making a note here:
+[153]HUGE SUCCESS.
+[1200]\[114]It's hard to overstate
+[175]my satisfaction.
+[1]\[1]Aperture Science
+[1]\[1]We do what we must
+[1]\[1]because we can.
+[1]\[1]For the good of all of us.
+[1]\[1]Except the ones who are dead.
+
+#[5000]\
+[1]Forms FORM-55551-5:
+
+[1]Personnel File Addendum:
+
+[1]Dear <<Subject Name Here>>,
+
+[1]I'm not even angry.
+[1]I'm being so sincere right now.
+[1]Even though you broke my heart.
+[1]And killed me.
+[1]And tore me to pieces.
+[1]And threw every piece into a fire.
+[1]As they burned it hurt because
+[1]I was so happy for you!
+
+[1]Now these points of data
+[1]make a beautiful line.
+[1]And we're out of beta.
+[1]We're releasing on time.
+[1]So I'm GLaD. I got burned.
+[1]Think of all the things we learned
+[1]for the people who are
+[1]still alive.
+
+#[5000]\
+[1]Forms FORM-55551-6:
+
+[1]Personnel File Addendum Addendum:
+
+[1]One last thing:
+
+[1]Go ahead and leave me.
+[1]I think I prefer to stay inside.
+[1]Maybe you'll find someone else
+[1]to help you.
+[1]Maybe Black Mesa...
+[1]THAT WAS A JOKE. FAT CHANCE.
+[1]Anyway, this cake is great.
+[1]It's so delicious and moist.
+
+[1]Look at me still talking
+[1]when there's science to do!
+[1]When I look out there,
+[1]it makes me GLaD Im not you.
+[1]I've experiments to run.
+[1]There is research to be done.
+[1]On the people who are
+[1]still alive
+
+#[5000]\
+[1]PS: And believe me I am
+[1]still alive.
+
+[1]PPS: I'm doing Science and I'm
+[1]still alive.
+
+[1]PPPS: I feel FANTASTIC and I'm
+[1]still alive.
+
+
+[1]FINAL THOUGHT:
+
+[1]While you're dying I'll be
+[1]still alive.
+
+
+[1]FINAL THOUGHT PS:
+
+[1]And when you're dead I will be
+[1]still alive

@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "tc.h"
 #include "utility.h"
+#include "tc.h"
 
 /* Constants and Macros */
 
@@ -26,7 +26,6 @@
 
 void play_song(FILE *stream);
 void draw_border(FILE *file);
-char **get_lines(int *n, FILE *stream);
 int main();
 
 /* Function Implementation */
@@ -36,7 +35,7 @@ int main()
 	// Set terminal settings
 	enter_screen();
 	echo_off();
-	//hide_cursor();
+	set_cursor_style(3);
 	printf("%s%s", COLOR_FG, COLOR_BG);
 
 	FILE *border_stream = fopen("border.txt", "r");
@@ -46,10 +45,6 @@ int main()
 	if (!border_stream) return error("error opening border.txt\n");
 	if (!lyrics_stream) return error("error opening lyrics.txt\n");
 	if (!images_stream) return error("error opening ascii_art.txt\n");
-
-	// Basic settings
-	//int n = 0;
-	//char **lines = get_lines(&n, stream);
 
 	draw_border(border_stream);
 	play_song(lyrics_stream);
@@ -65,8 +60,9 @@ int main()
 
 	exit_screen();
 	echo_on();
-	//show_cursor();
+	show_cursor();
 	printf("%s", COLOR_NRM);
+	set_cursor_style(0);
 
 	return 0;
 }
@@ -85,44 +81,43 @@ void draw_border(FILE *file)
 		printf("%c", c);
 }
 
-
 void play_song(FILE *stream)
 {
 	char c;
 	int ms = 0;
 	int x = LYRICS_X0, y = LYRICS_Y0;
-	bool wrap = false, print = false;	
+	bool print = false;	
 
 	while((c = fgetc(stream)) != EOF)
 	{
-		if (y > LYRICS_Y1) wrap = true;
-
-		if (wrap)
-		{
-			clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
-			y = LYRICS_Y0;
-			wrap = false;
-		}
-
 		switch (c)
 		{
 			case '[': ms = 0; print = false; continue; break;
 			case ']': print = true; continue; break;
 			case '\n': y++; x = LYRICS_X0; continue; break;
-			case '\\': delay(ms); continue; break;
-			case '#': wrap = true; continue; break;
+			case '\\':
+								move_cursor(x, y);
+								printf("");
+								fflush(stdout);
+								delay(ms);
+								continue; break;
+			case '#':
+								clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
+								y = LYRICS_Y0;
+								continue; break;
 		}
 
 		if (print)
 		{
-			delay(ms);
 			move_cursor(x, y);
-			printf("%c", c);
 			x++;
+			printf("%c", c);
 			fflush(stdout);
+			delay(ms);
 		}
 		else
-		{
+		{ // Cast c to int & add to ms
+			// E.g 3 + '2' = 32
 			int ic = c - '0';
 			ms = ms * 10;
 			ms = ms + ic;
