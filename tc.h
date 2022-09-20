@@ -4,6 +4,10 @@
 #include <termios.h>
 #include <signal.h>
 
+// Include Guard
+#ifndef TC_H
+#define TC_H
+
 // Constants
 
 #define COLOR_NRM "\033[0m"
@@ -19,6 +23,7 @@
 #define exit_screen() puts("\033[?1049l")
 #define hide_cursor() puts("\033[?25l")
 #define show_cursor() puts("\033[?25h")
+#define set_cursor_style(N) printf("\033[%d q", N)
 
 // Function Declarations
 
@@ -51,3 +56,5 @@ void echo_on()
 	term.c_lflag |= ECHO;
 	tcsetattr(1, TCSANOW, &term);
 }
+
+#endif

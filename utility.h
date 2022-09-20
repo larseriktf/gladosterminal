@@ -1,6 +1,7 @@
-// Constants
+#ifndef UTILITY_H
+#define UTILITY_H
 
-#define BUFFER_SIZE 4096
+#include "tc.h"
 
 // Function declarations
 
@@ -29,3 +30,5 @@ void clear(int x0, int y0, int x1, int y1)
 		}
 	}
 }
+
+#endif
