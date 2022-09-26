@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 #include "utility.h"
 #include "tc.h"
@@ -29,9 +30,9 @@
 /* Function Declaration */
 
 void point_char(int x, int y, char c);
-void draw_credits(FILE *stream);
-void draw_ascii_art(FILE *stream);
-void draw_lyrics(FILE *stream);
+void *draw_credits(void *arg);
+void *draw_ascii_art(void *arg);
+void *draw_lyrics(void *arg);
 void draw_border(FILE *stream);
 int main();
 
@@ -39,6 +40,8 @@ int main();
 
 int main()
 {
+	pthread_t p1, p2, p3;
+
 	// Set terminal settings
 	enter_screen();
 	echo_off();
@@ -56,9 +59,13 @@ int main()
 	if (!credits_stream) return error("error opening credits.txt\n");
 
 	draw_border(border_stream);
-	//draw_lyrics(lyrics_stream);
-	//draw_ascii_art(ascii_stream);
-	draw_credits(credits_stream);
+	pthread_create(&p1, NULL, draw_lyrics, lyrics_stream);
+	pthread_create(&p2, NULL, draw_ascii_art, ascii_stream);
+	pthread_create(&p3, NULL, draw_credits, credits_stream);
+
+	pthread_join(p1, NULL);
+	pthread_join(p2, NULL);
+	pthread_join(p3, NULL);
 
 	// Keep application running until keypress
 	char c = getchar();
@@ -93,8 +100,9 @@ void draw_border(FILE *stream)
 		printf("%c", c);
 }
 
-void draw_lyrics(FILE *stream)
+void *draw_lyrics(void *arg)
 {
+	FILE *stream = (FILE*) arg;
 	char c;
 	int ms = 0;
 	int x = LYRICS_X0, y = LYRICS_Y0;
@@ -134,10 +142,12 @@ void draw_lyrics(FILE *stream)
 			ms = ms + ic;
 		}
 	}
+	return NULL;
 }
 
-void draw_ascii_art(FILE *stream)
+void *draw_ascii_art(void *arg)
 {
+	FILE *stream = (FILE*) arg;
 	char c;
 	int ms = 0, count = 20;
 	int x = ASCII_X0, y = ASCII_Y0;
@@ -174,10 +184,12 @@ void draw_ascii_art(FILE *stream)
 			x++;
 		}
 	}
+	return NULL;
 }
 
-void draw_credits(FILE *stream)
+void *draw_credits(void *arg)
 {
+	FILE *stream = (FILE*) arg;
 	char buffer[9000], c;
 	int ms = 50;
 	int x = CREDITS_X0, y = CREDITS_Y0,
@@ -227,6 +239,7 @@ void draw_credits(FILE *stream)
 		}
 		i++;
 	}
+	return NULL;
 }
 
 void point_char(int x, int y, char c)
