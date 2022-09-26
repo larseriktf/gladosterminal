@@ -16,11 +16,10 @@
 #define LYRICS_X1 50
 #define LYRICS_Y1 36
 
-// For future credits implementation
-// #define CREDITS_X0 55
-// #define CREDITS_Y0 1
-// #define CREDITS_X1 102
-// #define CREDITS_Y1 18
+#define CREDITS_X0 55
+#define CREDITS_Y0 1
+#define CREDITS_X1 102
+#define CREDITS_Y1 18
 
 #define ASCII_X0 60
 #define ASCII_Y0 20
@@ -29,9 +28,11 @@
 
 /* Function Declaration */
 
+void point_char(int x, int y, char c);
+void draw_credits(FILE *stream);
 void draw_ascii_art(FILE *stream);
-void play_song(FILE *stream);
-void draw_border(FILE *file);
+void draw_lyrics(FILE *stream);
+void draw_border(FILE *stream);
 int main();
 
 /* Function Implementation */
@@ -47,14 +48,17 @@ int main()
 	FILE *border_stream = fopen("border.txt", "r");
 	FILE *lyrics_stream = fopen("lyrics.txt", "r");
 	FILE *ascii_stream = fopen("ascii_art.txt", "r");
+	FILE *credits_stream = fopen("credits.txt", "r");
 
 	if (!border_stream) return error("error opening border.txt\n");
 	if (!lyrics_stream) return error("error opening lyrics.txt\n");
 	if (!ascii_stream) return error("error opening ascii_art.txt\n");
+	if (!credits_stream) return error("error opening credits.txt\n");
 
 	draw_border(border_stream);
-	//play_song(lyrics_stream);
-	draw_ascii_art(ascii_stream);
+	//draw_lyrics(lyrics_stream);
+	//draw_ascii_art(ascii_stream);
+	draw_credits(credits_stream);
 
 	// Keep application running until keypress
 	char c = getchar();
@@ -64,6 +68,7 @@ int main()
 	fclose(border_stream);
 	fclose(lyrics_stream);
 	fclose(ascii_stream);
+	fclose(credits_stream);
 
 	exit_screen();
 	echo_on();
@@ -88,7 +93,7 @@ void draw_border(FILE *stream)
 		printf("%c", c);
 }
 
-void play_song(FILE *stream)
+void draw_lyrics(FILE *stream)
 {
 	char c;
 	int ms = 0;
@@ -106,6 +111,7 @@ void play_song(FILE *stream)
 								move_cursor(x, y);
 								printf("");
 								fflush(stdout);
+								//point_char(x, y, c);
 								delay(ms);
 								continue; break;
 			case '#':
@@ -116,10 +122,8 @@ void play_song(FILE *stream)
 
 		if (print)
 		{
-			move_cursor(x, y);
 			x++;
-			printf("%c", c);
-			fflush(stdout);
+			point_char(x, y, c);
 			delay(ms);
 		}
 		else
@@ -166,11 +170,68 @@ void draw_ascii_art(FILE *stream)
 				continue;
 			}
 
-			//delay(ms);
-			move_cursor(x, y);
-			printf("%c", c);
-			fflush(stdout);
+			point_char(x, y, c);
 			x++;
 		}
 	}
+}
+
+void draw_credits(FILE *stream)
+{
+	char buffer[9000], c;
+	int ms = 50;
+	int x = CREDITS_X0, y = CREDITS_Y0,
+			start = 0, end = CREDITS_Y1,
+			i = 0, count = 0, cp = 0;
+	bool setcp = false;
+
+	// Fill buffer
+	while ((buffer[i] = fgetc(stream)) != EOF) i++;
+	buffer[i] = '\0';
+
+	// Iterate buffer
+	i = 0;
+	while (buffer[i] != '\0')
+	{
+		c = buffer[i];
+
+		// set checkpoint
+		if (setcp)
+		{
+			cp = i;
+			setcp = false;
+		}
+
+		if (c == '\n')
+		{
+			y++; x = CREDITS_X0; count++;
+			setcp = true;
+			//if (count == start + 1) setcp = true;
+		}
+		else
+		{
+			if (count == end)
+			{
+				start++; end++;
+				count = start;
+				y = CREDITS_Y0; i = cp;
+				clear(CREDITS_X0, CREDITS_Y0, CREDITS_X1, CREDITS_Y1);
+			}
+
+			// Change delay for range
+			if (end > CREDITS_Y1 && count < end - 1) delay(0);
+			else delay(ms);
+
+			point_char(x, y, c);
+			x++;
+		}
+		i++;
+	}
+}
+
+void point_char(int x, int y, char c)
+{
+	move_cursor(x, y);
+	printf("%c", c);
+	fflush(stdout);
 }
