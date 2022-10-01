@@ -12,24 +12,24 @@
 
 /* Constants and Macros */
 
-#define LYRICS_X0 2
-#define LYRICS_Y0 1
-#define LYRICS_X1 50
-#define LYRICS_Y1 36
+#define LYRICS_X0 3
+#define LYRICS_Y0 2
+#define LYRICS_X1 51
+#define LYRICS_Y1 38
 
 #define CREDITS_X0 55
-#define CREDITS_Y0 1
-#define CREDITS_X1 102
+#define CREDITS_Y0 3
+#define CREDITS_X1 103
 #define CREDITS_Y1 18
 
 #define ASCII_X0 60
-#define ASCII_Y0 20
+#define ASCII_Y0 21
 #define ASCII_X1 100
-#define ASCII_Y1 40
+#define ASCII_Y1 41
 
 /* Function Declaration */
 
-void point_char(int x, int y, char c);
+void plot_char(int x, int y, char c);
 void *draw_credits(void *arg);
 void *draw_ascii_art(void *arg);
 void *draw_lyrics(void *arg);
@@ -61,11 +61,11 @@ int main()
 	draw_border(border_stream);
 	//pthread_create(&p1, NULL, draw_lyrics, lyrics_stream);
 	pthread_create(&p2, NULL, draw_ascii_art, ascii_stream);
-	//pthread_create(&p3, NULL, draw_credits, credits_stream);
+	pthread_create(&p3, NULL, draw_credits, credits_stream);
 
 	//pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
-	//pthread_join(p3, NULL);
+	pthread_join(p3, NULL);
 
 	// Keep application running until keypress
 	char c = getchar();
@@ -121,7 +121,7 @@ void *draw_lyrics(void *arg)
 								move_cursor(x, y);
 								printf("");
 								fflush(stdout);
-								//point_char(x, y, c);
+								//plot_char(x, y, c);
 								delay(ms);
 								continue; break;
 			case '#':
@@ -133,7 +133,7 @@ void *draw_lyrics(void *arg)
 		if (print)
 		{
 			x++;
-			point_char(x, y, c);
+			plot_char(x, y, c);
 			delay(ms);
 		}
 		else
@@ -182,7 +182,7 @@ void *draw_ascii_art(void *arg)
 				continue;
 			}
 
-			point_char(x, y, c);
+			plot_char(x, y, c);
 			x++;
 		}
 	}
@@ -192,16 +192,18 @@ void *draw_ascii_art(void *arg)
 void *draw_credits(void *arg)
 {
 	FILE *stream = (FILE*) arg;
-	char buffer[9000], c;
-	int ms = 50;
-	int x = CREDITS_X0, y = CREDITS_Y0,
-			start = 0, end = CREDITS_Y1,
-			i = 0, count = 0, cp = 0;
-	bool setcp = false;
+	char buffer[9000], c, c1;
+	int ms = 68;
+	int x = CREDITS_X0, y = CREDITS_Y1, i = 0, cp = 0, count = 0;
+	int range = CREDITS_Y1 - CREDITS_Y0 - 1;
+	bool set_cp;
+
 
 	// Fill buffer
 	while ((buffer[i] = fgetc(stream)) != EOF) i++;
 	buffer[i] = '\0';
+
+	delay(9025);
 
 	// Iterate buffer
 	i = 0;
@@ -209,34 +211,50 @@ void *draw_credits(void *arg)
 	{
 		c = buffer[i];
 
-		// set checkpoint
-		if (setcp)
-		{
-			cp = i;
-			setcp = false;
-		}
-
 		if (c == '\n')
 		{
-			y++; x = CREDITS_X0; count++;
-			setcp = true;
-			//if (count == start + 1) setcp = true;
-		}
-		else
-		{
-			if (count == end)
+			// Reset x & y
+			x = CREDITS_X0;
+			y = CREDITS_Y0;
+
+			if (count < range) y += range - count;
+
+			clear(CREDITS_X0, CREDITS_Y0, CREDITS_X1, CREDITS_Y1);
+			count++;
+			set_cp = true;
+
+			// Print previous
+			for (int j = cp; j < i; j++)
 			{
-				start++; end++;
-				count = start;
-				y = CREDITS_Y0; i = cp;
-				clear(CREDITS_X0, CREDITS_Y0, CREDITS_X1, CREDITS_Y1);
+				c1 = buffer[j];
+				if (c1 == '\n')
+				{
+					if (count > range && set_cp)
+					{
+						cp = j + 1;
+						set_cp = false;
+					}
+					x = CREDITS_X0;
+					y++;
+				}
+				else
+				{
+					if (c1 == '#') c1 = ' ';
+					plot_char(x, y, c1);
+					x++;
+				}
 			}
 
-			// Change delay for range
-			if (end > CREDITS_Y1 && count < end - 1) delay(0);
-			else delay(ms);
-
-			point_char(x, y, c);
+			// Reset x & y
+			x = CREDITS_X0;
+			y = CREDITS_Y1;
+		}
+		else // Print current animated
+		{
+			//delay(ms);
+			if (c == '#') c = ' ';
+			usleep(68650);
+			plot_char(x, y, c);
 			x++;
 		}
 		i++;
@@ -244,7 +262,7 @@ void *draw_credits(void *arg)
 	return NULL;
 }
 
-void point_char(int x, int y, char c)
+void plot_char(int x, int y, char c)
 {
 	move_cursor(x, y);
 	printf("%c", c);

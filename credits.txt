@@ -1,9 +1,9 @@
->LIST PERSONNEL   << START
+>LIST PERSONNEL
 #
 #
 Gautam Babbar
 Ted Backman
-Kelly Bailey      << COUNT
+Kelly Bailey
 Jeff Ballinger
 Aaron Barber
 Jeep Barnett
@@ -16,7 +16,7 @@ Mike Blaszczak
 Iestyn Bleasdale-Shepherd
 Chris Bokitch
 Steve Bond
-Matt Boone        << END
+Matt Boone
 Antoine Bourdon
 Jamaal Bradley
 Jason Brashill
@@ -44,7 +44,7 @@ Laura Dubuk
 Mike Dunkle
 Mike Durand
 Mike Dussault
-Dhabih eng
+Dhabih Eng
 Katie Engel
 Chet Faliszek
 Adrian Finol
@@ -65,7 +65,7 @@ Joe Han
 Don Holden
 Jason Holtman
 Gray Horsfield
-Kaith Huggins
+Keith Huggins
 Jim Hughes
 Jon Huisingh
 Brian Jacobson
@@ -84,7 +84,7 @@ Marc Laidlaw
 Jeff Lane
 Tim Larkin
 Dan LeFree
-Isabelle Lemay
+Isabelle LeMay
 Tom Leonard
 Jeff Lind
 Doug Lombardi
@@ -94,7 +94,7 @@ Realm Lovejoy
 Randy Lundeen
 Scott Lynch
 Ido Magal
-Rick Maggiore
+Nick Maggiore
 John McCaskey
 Patrick McClard
 Steve McClure
@@ -111,7 +111,7 @@ Jake Nicholson
 Martin Otten
 Nick Papineau
 Karen Prell
-Bay Raitt	
+Bay Raitt
 Tristan Reidford
 Alfred Reynolds
 Matt Rhoten
@@ -156,8 +156,10 @@ Torsten Zabka
 #
 #
 #
+#
 'Still Alive' by:
 Jonathan Coulton
+#
 #
 #
 #
@@ -167,14 +169,17 @@ Mike Patton - THE ANGER SPHERE
 #
 #
 #
+#
 Voice Casting:
 Shana Landsburg\Teri Fiddleman
 #
 #
 #
 #
+#
 Voice Recording:
 Pure Audio, Seattle, WA
+#
 #
 #
 #
@@ -186,8 +191,10 @@ Pat Cockburn, Pure Audio
 #
 #
 #
+#
 Translations:
 SDL
+#
 #
 #
 #
@@ -227,10 +234,10 @@ and Don Kemmis, SLK Technologies
 #
 #
 #
+#
 THANK YOU FOR PARTICIPATING
 IN THIS
 ENRICHMENT CENTER ACTIVITY!!
-#
 #
 #
 #
