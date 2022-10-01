@@ -59,13 +59,13 @@ int main()
 	if (!credits_stream) return error("error opening credits.txt\n");
 
 	draw_border(border_stream);
-	pthread_create(&p1, NULL, draw_lyrics, lyrics_stream);
+	//pthread_create(&p1, NULL, draw_lyrics, lyrics_stream);
 	pthread_create(&p2, NULL, draw_ascii_art, ascii_stream);
-	pthread_create(&p3, NULL, draw_credits, credits_stream);
+	//pthread_create(&p3, NULL, draw_credits, credits_stream);
 
-	pthread_join(p1, NULL);
+	//pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
-	pthread_join(p3, NULL);
+	//pthread_join(p3, NULL);
 
 	// Keep application running until keypress
 	char c = getchar();
@@ -94,6 +94,8 @@ void draw_border(FILE *stream)
 
 	clear(0, 0, cols, rows);
 	move_cursor(0, 0);
+
+	delay(1300);
 
 	// Draw border from file
 	while((c = fgetc(stream)) != EOF)
