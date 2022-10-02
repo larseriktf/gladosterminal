@@ -13,7 +13,7 @@
 /* Constants and Macros */
 
 #define LYRICS_X0 3
-#define LYRICS_Y0 2
+#define LYRICS_Y0 3
 #define LYRICS_X1 51
 #define LYRICS_Y1 38
 
@@ -114,26 +114,19 @@ void *play_lyrics(void *arg)
 	{
 		switch (c)
 		{
-			case '[': ms = 0; print = false; continue; break;
-			case ']': print = true; continue; break;
+			case '[' : ms = 0; print = false; continue; break;
+			case ']' : print = true; continue; break;
 			case '\n': y++; x = LYRICS_X0; continue; break;
-			case '\\':
-								move_cursor(x, y);
-								printf("");
-								fflush(stdout);
-								//plot_char(x, y, c);
-								delay(ms);
-								continue; break;
-			case '#':
-								clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
-								y = LYRICS_Y0;
-								continue; break;
+			case '\\': plot_char(x, y, '\0'); delay(ms); continue; break;
+			case '#' : clear(LYRICS_X0, LYRICS_Y0, LYRICS_X1, LYRICS_Y1);
+								 y = LYRICS_Y0;
+								 continue; break;
 		}
 
 		if (print)
 		{
-			x++;
 			plot_char(x, y, c);
+			x++;
 			delay(ms);
 		}
 		else
