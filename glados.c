@@ -30,9 +30,9 @@
 /* Function Declaration */
 
 void plot_char(int x, int y, char c);
-void *draw_credits(void *arg);
-void *draw_ascii_art(void *arg);
-void *draw_lyrics(void *arg);
+void *play_credits(void *arg);
+void *draw_ascii(void *arg);
+void *play_lyrics(void *arg);
 void draw_border(FILE *stream);
 int main();
 
@@ -59,13 +59,13 @@ int main()
 	if (!credits_stream) return error("error opening credits.txt\n");
 
 	draw_border(border_stream);
-	//pthread_create(&p1, NULL, draw_lyrics, lyrics_stream);
-	pthread_create(&p2, NULL, draw_ascii_art, ascii_stream);
-	pthread_create(&p3, NULL, draw_credits, credits_stream);
+	pthread_create(&p1, NULL, play_lyrics, lyrics_stream);
+	pthread_create(&p2, NULL, draw_ascii, ascii_stream);
+	//pthread_create(&p3, NULL, play_credits, credits_stream);
 
-	//pthread_join(p1, NULL);
+	pthread_join(p1, NULL);
 	pthread_join(p2, NULL);
-	pthread_join(p3, NULL);
+	//pthread_join(p3, NULL);
 
 	// Keep application running until keypress
 	char c = getchar();
@@ -102,7 +102,7 @@ void draw_border(FILE *stream)
 		printf("%c", c);
 }
 
-void *draw_lyrics(void *arg)
+void *play_lyrics(void *arg)
 {
 	FILE *stream = (FILE*) arg;
 	char c;
@@ -147,7 +147,7 @@ void *draw_lyrics(void *arg)
 	return NULL;
 }
 
-void *draw_ascii_art(void *arg)
+void *draw_ascii(void *arg)
 {
 	FILE *stream = (FILE*) arg;
 	char c;
@@ -189,7 +189,7 @@ void *draw_ascii_art(void *arg)
 	return NULL;
 }
 
-void *draw_credits(void *arg)
+void *play_credits(void *arg)
 {
 	FILE *stream = (FILE*) arg;
 	char buffer[9000], c, c1;
