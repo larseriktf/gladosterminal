@@ -1,0 +1,26 @@
+[92]Forms FORM-29827281-12:
+
+[94]Test Assessment Report
+
+
+[3060]\[108]This was a triumph.
+[2167]\[95]I'm making a note here:
+[153]HUGE SUCCESS.
+[1200]\[114]It's hard to overstate
+[175]my satisfaction.
+[1]\[1]Aperture Science
+[1]\[1]We do what we must
+[1]\[1]because we can.
+[1]\[1]For the good of all of us.
+[1]\[1]Except the ones who are dead.
+
+[1]But there's no sense crying
+[1]over every mistake.
+[1]You just keep on trying
+[1]till you run out of cake.
+[1]And the science gets done.
+[1]And you make a neat gun.
+[1]For the people who are
+[1]still alive.
+
+#[1000]\[0]> Press 'any' key to exit.
